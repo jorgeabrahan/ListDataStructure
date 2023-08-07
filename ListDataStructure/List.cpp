@@ -53,14 +53,24 @@ void List::remove(int index) {
 	}
 	int counter = 0;
 	for (Node* node = first; node != NULL; node = node->next) {
+		bool is_one_before_last = counter == (nodes_amount - 2);
 		// one position before the desired index
 		if (counter == (index - 1)) {
 			Node* remove = node->next;
-			// if the last node is being deleted
+			// if user wants to remove last node
 			if (index == (nodes_amount - 1)) {
 				node->next = NULL;
 				last = node;
 			} else node->next = node->next->next;
+			nodes_amount--;
+			delete(remove);
+			return;
+		}
+		if (is_one_before_last && index > (nodes_amount - 1)) {
+			Node* remove = node->next;
+			node->next = NULL;
+			last = node;
+			nodes_amount--;
 			delete(remove);
 			return;
 		}
@@ -116,7 +126,7 @@ void List::insert(int index, int number) {
 		return;
 	}
 	// for index >= list_length insert the number at the end
-	if (index > nodes_amount) {
+	if (index > (nodes_amount - 1)) {
 		append(number);
 		return;
 	}
@@ -131,6 +141,7 @@ void List::insert(int index, int number) {
 			Node* temporal = node->next;
 			node->next = new_node;
 			new_node->next = temporal;
+			nodes_amount++;
 			return;
 		}
 		counter++;
