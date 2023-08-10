@@ -12,9 +12,11 @@ public:
 	List();
 	void prepend(int number); // LIFO (Last In First Out)
 	void append(int number); // FIFO (First In First Out)
+	int count(int number);
 	void remove(int index);
 	void removeFirst();
 	void show();
+	void showReverse();
 	void clear();
 	int findIndex(int number);
 	void insert(int index, int number);
