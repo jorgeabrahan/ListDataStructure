@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stack>
 #include "List.h"
 #include "Node.h"
 
@@ -45,36 +46,33 @@ void List::append(int number) {
 	nodes_amount++;
 }
 
-void List::remove(int index) {
-	// for index <= 0 remove the first one
-	if (index <= 0) {
-		removeFirst();
-		return;
+int List::count(int number) {
+	int matches = 0;
+	for (Node* current_node = first; current_node != NULL; current_node = current_node->next) {
+		if (current_node->data == number) matches++;
 	}
+	return matches;
+}
+
+void List::remove(int index_to_remove) {
+	if (index_to_remove >= nodes_amount) return;
+	bool is_index_negative = index_to_remove < 0;
+	index_to_remove = is_index_negative ? nodes_amount + index_to_remove : index_to_remove;
+	if (index_to_remove < 0) return;
+	if (index_to_remove == 0) return removeFirst();
 	int counter = 0;
-	for (Node* node = first; node != NULL; node = node->next) {
-		bool is_one_before_last = counter == (nodes_amount - 2);
-		// one position before the desired index
-		if (counter == (index - 1)) {
-			Node* remove = node->next;
-			// if user wants to remove last node
-			if (index == (nodes_amount - 1)) {
-				node->next = NULL;
-				last = node;
-			} else node->next = node->next->next;
-			nodes_amount--;
-			delete(remove);
-			return;
+	bool is_last_node_being_removed = index_to_remove == (nodes_amount - 1);
+	for (Node* current_node = first; current_node != NULL; current_node = current_node->next) {
+		if (counter != (index_to_remove - 1)) {
+			counter++;
+			continue;
 		}
-		if (is_one_before_last && index > (nodes_amount - 1)) {
-			Node* remove = node->next;
-			node->next = NULL;
-			last = node;
-			nodes_amount--;
-			delete(remove);
-			return;
-		}
-		counter++;
+		Node* node_to_remove = current_node->next;
+		current_node->next = is_last_node_being_removed ? NULL : current_node->next->next;
+		if (is_last_node_being_removed) last = current_node;
+		delete(node_to_remove);
+		nodes_amount--;
+		return;
 	}
 }
 
@@ -104,6 +102,22 @@ void List::show() {
 	}
 	for (Node* node = first; node != NULL; node = node->next) {
 		cout << node->data << ", ";
+	}
+	cout << endl;
+}
+
+void List::showReverse() {
+	if (nodes_amount == 0) {
+		cout << "list is empty!";
+		return;
+	}
+	stack<int> stack;
+	// all nodes are added to a stack
+	for (Node* current_node = first; current_node != NULL; current_node = current_node->next) stack.push(current_node->data);
+	// nodes are taken out from the stack and displayed
+	while (!stack.empty()) {
+		cout << stack.top() << ", ";
+		stack.pop();
 	}
 	cout << endl;
 }
